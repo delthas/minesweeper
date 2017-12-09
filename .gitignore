@@ -39,3 +39,4 @@ local.properties
 
 # minesweeper specific files
 
+scores.txt
