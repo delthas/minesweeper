@@ -36,10 +36,10 @@ public class Minesweeper {
   
   
   // the size of the grid/field (assumed to be square)
-  private static final int GRID_SIZE = 11;
+  private static final int GRID_SIZE = 13;
   
   // the count of mines to be put in the field
-  private static final int MINE_COUNT = (int) (0.05 * GRID_SIZE * GRID_SIZE);
+  private static final int MINE_COUNT = (int) (0.15 * GRID_SIZE * GRID_SIZE);
   
   // the url of the server (for leaderboard purposes)
   private static final String SERVER_URL = "http://delthas.fr:5784";
