@@ -1,9 +1,13 @@
-package fr.delthas.minesweeper;
+package fr.delthas.minesweeper.client;
 
 import fr.delthas.javaui.Component;
 
 import java.util.function.Function;
 
+/**
+ * A component that captures all key presses on it and forwards it
+ * to a simple listener
+ */
 public class CaptureComponent extends Component {
   private Function<Integer, Boolean> listener;
   

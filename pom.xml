@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>fr.delthas</groupId>
   <artifactId>minesweeper</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -17,8 +17,18 @@
     <dependency>
       <groupId>fr.delthas</groupId>
       <artifactId>javaui</artifactId>
-      <version>1.0.8</version>
+      <version>1.0.9</version>
     </dependency>
+      <dependency>
+        <groupId>com.sparkjava</groupId>
+        <artifactId>spark-core</artifactId>
+        <version>2.5.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>1.7.21</version>
+      </dependency>
   </dependencies>
 
   <build>
@@ -31,23 +41,75 @@
     </extensions>
     <plugins>
       <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>fr.delthas.minesweeper.Minesweeper</mainClass>
-            </manifest>
-          </archive>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-        </configuration>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.1.0</version>
         <executions>
           <execution>
+            <id>client</id>
             <phase>package</phase>
             <goals>
-              <goal>single</goal>
+              <goal>shade</goal>
             </goals>
+            <configuration>
+              <filters>
+              <filter>
+                <artifact>fr.delthas:minesweeper</artifact>
+                <excludes>
+                  <exclude>fr/delthas/minesweeper/server/**</exclude>
+                </excludes>
+              </filter>
+              </filters>
+              <finalName>minesweeper-client</finalName>
+              <minimizeJar>true</minimizeJar>
+              <artifactSet>
+                <includes>
+                  <include>fr.delthas:minesweeper</include>
+                  <include>fr.delthas:javaui</include>
+                  <include>org.lwjgl:*</include>
+                  <include>org.joml:*</include>
+                </includes>
+              </artifactSet>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>fr.delthas.minesweeper.client.Minesweeper</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+          <execution>
+            <id>server</id>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <filters>
+                <filter>
+                  <artifact>fr.delthas:minesweeper</artifact>
+                  <excludes>
+                    <exclude>fr/delthas/minesweeper/client/**</exclude>
+                    <exclude>*</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <finalName>minesweeper-server</finalName>
+              <minimizeJar>true</minimizeJar>
+              <artifactSet>
+                <includes>
+                  <include>fr.delthas:minesweeper</include>
+                  <include>com.sparkjava:*</include>
+                  <include>org.slf4j:*</include>
+                  <include>org.eclipse.jetty:*</include>
+                  <include>org.eclipse.jetty.websocket:*</include>
+                  <include>javax.servlet:*</include>
+                </includes>
+              </artifactSet>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>fr.delthas.minesweeper.server.Server</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
           </execution>
         </executions>
       </plugin>

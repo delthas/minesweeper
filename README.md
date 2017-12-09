@@ -2,6 +2,10 @@
 
 This is a very small MineSweeper demo project written in Java, that uses [JavaUI](https://github.com/Delthas/JavaUI).
 
+The project also includes a very small server backend for leaderboards.
+
+Use ```mvn install``` to compile. The ```target``` folder will include a ```minesweeper-client.jar``` game client JAR file and a ```minesweeper-server.jar``` server JAR file. Make sure to change the hardcoded server hostname in the client if hosting your Minesweeper server.
+
 # Licence
 
 This project uses several modified sound samples which have a specific license:
@@ -11,4 +15,4 @@ This project uses several modified sound samples which have a specific license:
 - [Jingle_Achievement_00.wav by LittleRobotSoundFactory](https://freesound.org/people/LittleRobotSoundFactory/sounds/270404/) : [CC BY 3.0](http://creativecommons.org/publicdomain/zero/1.0/)
 - [Jingle_Lose_00.wav by LittleRobotSoundFactory](https://freesound.org/people/LittleRobotSoundFactory/sounds/270467/) : [CC BY 3.0](http://creativecommons.org/publicdomain/zero/1.0/)
 
-For all other files, see LICENSE.
+For all other files, the project is licensed under the MIT license.
