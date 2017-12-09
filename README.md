@@ -6,7 +6,7 @@ The project also includes a very small server backend for leaderboards.
 
 Use ```mvn install``` to compile. The ```target``` folder will include a ```minesweeper-client.jar``` game client JAR file and a ```minesweeper-server.jar``` server JAR file. Make sure to change the hardcoded server hostname in the client if hosting your Minesweeper server.
 
-Pre-built releases are available [in the releases tab](https://github.com/Delthas/minesweeper/releases/).
+Pre-built releases are available [in the releases tab](https://github.com/Delthas/minesweeper/releases/). The default server is most often running, you may but do not have to host your own.
 
 # Licence
 
