@@ -9,7 +9,9 @@ import java.awt.*;
 
 /**
  * A label that doesn't center the texts it prints, but rather
- * aligns it on the left, with a width/10 margin
+ * aligns it on the left, with a (width/10) margin.
+ *
+ * @author delthas
  */
 public class FixedPositionLabel extends Component {
   private String text = "";
@@ -25,11 +27,11 @@ public class FixedPositionLabel extends Component {
   @Override
   protected void render(InputState inputState, Drawer drawer) {
     drawer.setColor(Color.WHITE);
-    drawer.fillRectangle(0, 0, getWidth(), getHeight(), false);
+    drawer.rectangle(0, 0, getWidth(), getHeight()).draw();
     drawer.setColor(Color.BLACK);
-    drawer.fillRectangle(1, 1, getWidth() - 2, getHeight() - 2, false);
+    drawer.rectangle(1, 1, getWidth() - 2, getHeight() - 2).draw();
     drawer.setColor(Color.WHITE);
-    drawer.drawText(getWidth() / 10, getHeight() / 2, text, Font.COMIC, 16, false, true);
+    drawer.text(getWidth() / 10, getHeight() / 2, text, Font.COMIC, 16).centered(false, true).draw();
   }
 
   public String getText() {

@@ -182,7 +182,7 @@ public class Minesweeper {
         // make the text and colours change over time!
         String text = (frame % 10) < 5 ? "> MINESWEEPER <" : "< MINESWEEPER >";
         drawer.setColor(Color.getHSBColor(frame / 100f, 1f, 1f));
-        drawer.drawText(getWidth() / 2, getHeight() / 2, text, Font.COMIC, 72, true, true);
+        drawer.text(getWidth() / 2, getHeight() / 2, text, Font.COMIC, 72).centered(true, true).draw();
       }
     });
     
@@ -359,38 +359,39 @@ public class Minesweeper {
         
         // clear bg
         drawer.setColor(Color.BLACK);
-        drawer.fillRectangle(0, 0, getWidth(), getHeight(), false);
+        drawer.rectangle(0, 0, getWidth(), getHeight()).draw();
         
         // draw pretty rectangles
-        double offset = (inputState.getMouseX() - getWidth() / 2) * 3 / getWidth();
+        double offset = (inputState.getMouseX(this) - getWidth() / 2) * 3 / getWidth();
         double xOffset = offset >= 0 ? 100 * Math.expm1(-offset) : -100 * Math.expm1(offset);
-        offset = (inputState.getMouseY() - getHeight() / 2) * 3 / getHeight();
+        offset = (inputState.getMouseY(this) - getHeight() / 2) * 3 / getHeight();
         double yOffset = offset >= 0 ? 100 * Math.expm1(-offset) : -100 * Math.expm1(offset);
-        int rectangleCount = 20;
+        int rectangleCount = 10;
         for (int i = rectangleCount; i > 0; i--) {
           drawer.setColor(Color.getHSBColor(0, 0, (rectangleCount - i) * (rectangleCount - i) / (1.2f * rectangleCount * rectangleCount)));
-          drawer.fillRectangle(getWidth() / 2 + xOffset * i / rectangleCount, getHeight() / 2 + yOffset * i / rectangleCount, totalSize, totalSize, true);
+          drawer.rectangle(getWidth() / 2 + xOffset * i / rectangleCount, getHeight() / 2 + yOffset * i / rectangleCount, totalSize, totalSize).centered(true).draw();
           drawer.setColor(Color.BLACK);
-          drawer.fillRectangle(getWidth() / 2 + xOffset * i / rectangleCount, getHeight() / 2 + yOffset * i / rectangleCount, totalSize - 2, totalSize - 2, true);
+          drawer.rectangle(getWidth() / 2 + xOffset * i / rectangleCount, getHeight() / 2 + yOffset * i / rectangleCount, totalSize - 2, totalSize - 2).centered(true).draw();
         }
+  
+        int xMin = (int) ((getWidth() - totalSize) / 2);
+        int xMax = xMin + totalSize;
+        int yMin = (int) ((getHeight() - totalSize) / 2);
+        int yMax = yMin + totalSize;
         
         // clear main bg
         drawer.setColor(Color.WHITE);
-        drawer.fillRectangle(getWidth() / 2, getHeight() / 2, totalSize, totalSize, true);
+        drawer.rectangle(xMin, yMin, totalSize, totalSize).draw();
         
         // draw lines
         drawer.setColor(Color.BLACK);
-        int xMin = (int) ((getWidth() - totalSize) / 2);
-        int xMax = xMin + totalSize;
         int x = xMin - (size + 1);
-        int yMin = (int) ((getHeight() - totalSize) / 2);
-        int yMax = yMin + totalSize;
         int y = yMin - (size + 1);
         for (int i = 0; i <= GRID_SIZE + 1; i++) {
           x += size + 1;
           y += size + 1;
-          drawer.drawLine(x, yMin, x, yMax);
-          drawer.drawLine(xMin, y, xMax, y);
+          drawer.line(x, yMin, x, yMax).draw();
+          drawer.line(xMin, y, xMax, y).draw();
         }
         
         // draw tiles
@@ -405,10 +406,10 @@ public class Minesweeper {
             if ((tile & FLAG_SHOWN) == 0) {
               // hidden cells
               drawer.setColor(Color.GRAY);
-              drawer.fillRectangle(x, y, size, size, false);
+              drawer.rectangle(x, y, size, size).draw();
               if ((tile & FLAG_FLAG) != 0) {
                 // flagged cell? let's draw a flag
-                drawer.drawImage(x, y, size, size, images[TileImage.FLAG.ordinal()], false);
+                drawer.image(x, y, images[TileImage.FLAG.ordinal()]).size(size, size).draw();
                 continue;
               }
               continue;
@@ -416,18 +417,18 @@ public class Minesweeper {
             // shown cells
             if ((tile & FLAG_MINEFAIL) != 0) {
               // cell with a mine that was stepped on
-              drawer.drawImage(x, y, size, size, images[TileImage.MINEFAIL.ordinal()], false);
+              drawer.image(x, y, images[TileImage.MINEFAIL.ordinal()]).size(size, size).draw();
               continue;
             }
             if ((tile & FLAG_MINE) != 0) {
               // cell with a mine that was not stepped on (shown on game clear/fail)
-              drawer.drawImage(x, y, size, size, images[TileImage.MINE.ordinal()], false);
+              drawer.image(x, y, images[TileImage.MINE.ordinal()]).size(size, size).draw();
               continue;
             }
             // shown cell with no mine: draw count of adjacent tiles
             int sum = tile & 0xF; // 0xF >= 8
             drawer.setColor(sum == 0 ? Color.BLACK : Color.getHSBColor(sum / 8f, 1, 1));
-            drawer.drawText(x + size / 2f, y + size / 2f, Integer.toString(sum), Font.COMIC, fontSize, true, true);
+            drawer.text(x + size / 2f, y + size / 2f, Integer.toString(sum), Font.COMIC, fontSize).centered(true, true).draw();
           }
         }
       }
@@ -439,15 +440,15 @@ public class Minesweeper {
       @Override
       protected void render(InputState inputState, Drawer drawer) {
         drawer.setColor(Color.GRAY);
-        drawer.drawLine(maxDimension + 50, 35, maxDimension + 50, Ui.getHeight());
+        drawer.line(maxDimension + 50, 0, maxDimension + 50, Ui.getHeight()).draw();
       }
     });
   
-    // add a helper component/status bar
-    layerMain.addComponent(10, 10, Ui.getWidth() - 10, 25, new Label("> left click < : step   >-<   > right click < : flag   >-<   > enter < : restart   >-<   > escape < : quit"));
+    // add a helper label
+    layerMain.addComponent(sidePanelOffset, Ui.getHeight() * 8 / 10, 300, 50, new FixedPositionLabel("> to restart < : press enter"));
     
     // add an "elapsed time" label
-    layerMain.addComponent(sidePanelOffset, Ui.getHeight() * 8 / 10, 300, 50, new FixedPositionLabel() {
+    layerMain.addComponent(sidePanelOffset, Ui.getHeight() * 7 / 10, 300, 50, new FixedPositionLabel() {
       @Override
       protected void render(InputState inputState, Drawer drawer) {
         if(clicks == 0) {
@@ -461,7 +462,7 @@ public class Minesweeper {
     });
     
     // add a "bombs left" label
-    layerMain.addComponent(sidePanelOffset, Ui.getHeight() * 7 / 10, 300, 50, new FixedPositionLabel() {
+    layerMain.addComponent(sidePanelOffset, Ui.getHeight() * 6 / 10, 300, 50, new FixedPositionLabel() {
       @Override
       protected void render(InputState inputState, Drawer drawer) {
         setText("> bombs left < : " + bombsLeft);
@@ -470,7 +471,7 @@ public class Minesweeper {
     });
     
     // add a leaderboard label
-    layerMain.addComponent(sidePanelOffset, Ui.getHeight() * 2 / 10, 300, Ui.getHeight() * 4 / 10, new Component() {
+    layerMain.addComponent(sidePanelOffset, Ui.getHeight() * 1 / 10, 300, Ui.getHeight() * 4 / 10, new Component() {
       private long lastUpdateTime = 0;
       private int frame;
       private List<String> cachedNames = new ArrayList<>();
@@ -483,9 +484,9 @@ public class Minesweeper {
           // draw a pretty animation if the scores weren't successfully fetched yet
           float brightness = (100 - frame % 200) * (100 - frame % 200) / 10000f;
           drawer.setColor(Color.getHSBColor(0, 0, brightness));
-          drawer.drawText(getWidth() / 2, getHeight() / 2, (frame % 20) < 10 ? ">loading scores<" : "<loading scores>", Font.COMIC, 16, true, true);
+          drawer.text(getWidth() / 2, getHeight() / 2, (frame % 20) < 10 ? ">loading scores<" : "<loading scores>", Font.COMIC, 16).centered(true, true).draw();
           drawer.setColor(Color.getHSBColor(0, 0, 0.8f - brightness / 2));
-          drawer.fillRing(getWidth() / 2, getHeight() / 2, 150 - 20 * brightness, 10 * brightness + 1, true);
+          drawer.ring(getWidth() / 2, getHeight() / 2, 150 - 20 * brightness, 10 * brightness + 1).centered(true).draw();
         } else {
           if(lastUpdateTime < scoreUpdateTime) {
             cachedNames.clear();
@@ -499,15 +500,15 @@ public class Minesweeper {
             lastUpdateTime = scoreUpdateTime;
           }
           drawer.setColor(Color.WHITE);
-          drawer.fillRectangle(0, 0, getWidth(), getHeight(), false);
+          drawer.rectangle(0, 0, getWidth(), getHeight()).draw();
           drawer.setColor(Color.BLACK);
-          drawer.fillRectangle(1, 1, getWidth() - 2, getHeight() - 2, false);
+          drawer.rectangle(1, 1, getWidth() - 2, getHeight() - 2).draw();
           drawer.setColor(Color.WHITE);
-          drawer.drawText(getWidth() / 2, getHeight() - 50, ">top scores<", Font.COMIC, 16, true, false);
+          drawer.text(getWidth() / 2, getHeight() - 50, ">top scores<", Font.COMIC, 16).centered(true, false).draw();
           double y = getHeight() - 50 - 2 * lineHeight;
           for(int i=0;i<cachedScores.size() && y > 0; i++, y -= lineHeight) {
-            drawer.drawText(20, y, cachedNames.get(i), Font.COMIC, 16, false, false);
-            drawer.drawText(getWidth() / 2 - 10, y, cachedScores.get(i), Font.COMIC, 16, false, false);
+            drawer.text(20, y, cachedNames.get(i), Font.COMIC, 16).draw();
+            drawer.text(getWidth() / 2 - 10, y, cachedScores.get(i), Font.COMIC, 16).draw();
           }
         }
       }
@@ -543,7 +544,7 @@ public class Minesweeper {
         // fade-out animation!!
         float brightness = (time - lastChangeTime > 9000000000L) ? 1 - (time - lastChangeTime - 9000000000L) / 6000000000f: 1;
         drawer.setColor(Color.getHSBColor(0, 0, brightness));
-        drawer.drawText(getWidth() / 2, getHeight() / 2, text, Font.COMIC, 16, true, true);
+        drawer.text(getWidth() / 2, getHeight() / 2, text, Font.COMIC, 16).centered(true, true).draw();
       }
     });
     

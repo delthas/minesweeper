@@ -6,7 +6,9 @@ import java.util.function.Function;
 
 /**
  * A component that captures all key presses on it and forwards it
- * to a simple listener
+ * to a simple listener.
+ *
+ * @author delthas
  */
 public class CaptureComponent extends Component {
   private Function<Integer, Boolean> listener;
